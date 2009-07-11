@@ -1,0 +1,5 @@
+Written 2009 by Arend v. Reinersdorff, arend@arendvr.com
+java2rsf is Public domain.
+
+JDT.Core is licensed undter the Eclipse Public License
+JSAP is licensed under the LGPL
