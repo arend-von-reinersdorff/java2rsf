@@ -1,0 +1,45 @@
+TYPE(c) := CLASS(c) | MEMBER_CLASS(c) | LOCAL_CLASS(c) | ANONYMOUS_CLASS(c) | ENUM(c);
+
+SUBTYPE_OF(x, y) := TC(IMPLEMENTS(x, y) | EXTENDS(x, y)) | x = y;
+
+PRIMITIVE_TYPE("boolean");
+PRIMITIVE_TYPE("byte");
+PRIMITIVE_TYPE("char");
+PRIMITIVE_TYPE("double");
+PRIMITIVE_TYPE("float");
+PRIMITIVE_TYPE("int");
+PRIMITIVE_TYPE("long");
+PRIMITIVE_TYPE("short");
+//not really a primitive,
+//but this program doesn't recognize that String is immutable
+PRIMITIVE_TYPE("java.lang.String");
+
+INSTANCE_FIELDS_OF(c, f) := TYPE(c) & FIELD(f) & !IS(f, "static") & HAS(c, f);
+
+PROBLEMATIC_INHERITED_FIELDS_OF(c, f) := TYPE(c) & FIELD(f)
+	& !IS(f, "private") & !IS(f, "final") & !IS(f, "static") 
+	& EX(t, SUBTYPE_OF(c, t) & HAS(t, f));
+
+INITS_OF(c, init) := TYPE(c) & HAS(c, init) & (CONSTRUCTOR(init) | STATIC_INITIALIZER(init) | INSTANCE_INITIALIZER(init));
+
+IMMUTABLE_CLASS(c) := FALSE(c);
+IMMUTABLE_PRIMITIVE_FIELD(f) := FALSE(f);
+PREVIOUS_IMMUTABLE_CLASS(c) := TRUE(c);
+
+WHILE(PREVIOUS_IMMUTABLE_CLASS(c) != IMMUTABLE_CLASS(c)){
+	PREVIOUS_IMMUTABLE_CLASS(c) := IMMUTABLE_CLASS(c);
+	
+	IMMUTABLE_PRIMITIVE_FIELD(f) := IMMUTABLE_PRIMITIVE_FIELD(f) | 
+		(EX(p, (PRIMITIVE_TYPE(p) | IMMUTABLE_CLASS(p)) & IS_OF_TYPE(f, p))
+		& (IS(f, "final") | (IS(f, "private") & EX(t, TYPE(t) & HAS(t, f) & FA(w, !WRITES(w, f) | INITS_OF(t, w))))));
+	
+	IMMUTABLE_CLASS(imm) := IMMUTABLE_CLASS(imm) | 
+		(TYPE(imm) & IS(imm, "final")
+		& EX(f, INSTANCE_FIELDS_OF(imm, f))
+		& FA(f, !INSTANCE_FIELDS_OF(imm, f) | IMMUTABLE_PRIMITIVE_FIELD(f))
+		& !EX(p, PROBLEMATIC_INHERITED_FIELDS_OF(imm, p)));
+}
+
+
+
+PRINT ["IMMUTABLE"] IMMUTABLE_CLASS(imm);

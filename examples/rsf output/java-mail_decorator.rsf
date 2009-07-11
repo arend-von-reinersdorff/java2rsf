@@ -1,0 +1,4 @@
+#DECORATES	decoratorClass	baseClass
+DECORATES	com.sun.mail.imap.IMAPNestedMessage	com.sun.mail.imap.IMAPMessage	
+DECORATES	javax.mail.MessagingException	java.lang.Exception	
+DECORATES	javax.mail.search.NotTerm	javax.mail.search.SearchTerm	

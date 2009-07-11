@@ -1,0 +1,7 @@
+INHERITS_FROM(class, superClass) := TC(IMPLEMENTS(class, superClass) | EXTENDS(class, superClass));
+
+DECORATOR(decoratorClass, baseClass) := INHERITS_FROM(decoratorClass, baseClass) 
+	& EX(field, FIELD(field) & HAS(decoratorClass, field) & IS_OF_TYPE(field, baseClass));
+
+PRINT "#DECORATES	decoratorClass	baseClass", ENDL;
+PRINT ["DECORATES"] DECORATOR(x, y);
