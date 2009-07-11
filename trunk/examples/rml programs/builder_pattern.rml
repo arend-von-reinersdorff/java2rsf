@@ -1,0 +1,43 @@
+TYPE(x) := CLASS(x) | MEMBER_CLASS(x) | LOCAL_CLASS(x) | ANONYMOUS_CLASS(x) | ENUM(x) | INTERFACE(x) | ANNOTATION_TYPE(x);
+
+SUBTYPE_OF(x, y) := TC(IMPLEMENTS(x, y) | EXTENDS(x, y)) | x = y;
+
+
+SUBTYPE_CONSTRUCTOR(constructor, product) := CONSTRUCTOR(constructor)
+	& EX(type, HAS(type, constructor) & SUBTYPE_OF(type, product));
+
+SUBTYPE_FACTORY_METHOD(method, product) := METHOD(method) & IS(method, "static")
+	& EX(returnType, IS_OF_TYPE(method, returnType) & SUBTYPE_OF(returnType, product)
+		& EX(constructor, SUBTYPE_CONSTRUCTOR(constructor, returnType) & CALLS(method, constructor)));
+
+
+BASIC_BUILD_METHOD(method, product) := METHOD(method) & IS_OF_TYPE(method, product)
+	& IS(method, "public") & !(IS(method, "static"))
+	& EX(t, TYPE(t) & HAS(t, method) & !(SUBTYPE_OF(t, product)));
+
+ABSTRACT_BUILD_METHOD(method, product) := BASIC_BUILD_METHOD(method, product)
+	& (IS(method, "abstract") | EX(t, INTERFACE(t) & HAS(t, method)));
+
+CONCRETE_BUILD_METHOD(method, product) := BASIC_BUILD_METHOD(method, product)
+	& EX(creatorMethod, CALLS(method, creatorMethod) & 
+		(SUBTYPE_CONSTRUCTOR(creatorMethod, product) | SUBTYPE_FACTORY_METHOD(creatorMethod, product)));
+
+
+ABSTRACT_BUILDER(builder, product) := (INTERFACE(builder) | IS(builder, "abstract"))
+	& TYPE(product)
+	& EX(m, HAS(builder, m) & ABSTRACT_BUILD_METHOD(m, product));
+
+CONCRETE_BUILDER(builder, product) := EX(m, HAS(builder, m) & EX(t, SUBTYPE_OF(t, product) & CONCRETE_BUILD_METHOD(m, t)))
+	& EX(f, FIELD(f) & HAS(builder, f));
+
+
+BUILDER(abstractBuilder, concreteBuilder, product) :=
+	ABSTRACT_BUILDER(abstractBuilder, product) 
+	& CONCRETE_BUILDER(concreteBuilder, product)
+	& SUBTYPE_OF(concreteBuilder, abstractBuilder)
+	& abstractBuilder != concreteBuilder
+	& !(SUBTYPE_OF(abstractBuilder, product));
+
+
+PRINT "#BUILDER_PATTERN	abstractBuilder	concreteBuilder	product", ENDL;
+PRINT ["BUILDER_PATTERN"] BUILDER(a, c, p);

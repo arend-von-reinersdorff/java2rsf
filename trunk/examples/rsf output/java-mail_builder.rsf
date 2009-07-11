@@ -1,0 +1,5 @@
+#BUILDER_PATTERN	abstractBuilder	concreteBuilder	product
+BUILDER_PATTERN	javax.mail.Folder	com.sun.mail.pop3.POP3Folder	javax.mail.Flags	
+BUILDER_PATTERN	javax.mail.MessageAware	javax.mail.internet.MimePartDataSource	javax.mail.MessageContext	
+BUILDER_PATTERN	javax.mail.Store	com.sun.mail.imap.IMAPStore	javax.mail.Folder	
+BUILDER_PATTERN	javax.mail.Store	com.sun.mail.pop3.POP3Store	javax.mail.Folder	

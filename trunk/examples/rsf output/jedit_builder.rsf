@@ -1,0 +1,3 @@
+#BUILDER_PATTERN	abstractBuilder	concreteBuilder	product
+BUILDER_PATTERN	org.gjt.sp.jedit.gui.DockableWindowManager	org.gjt.sp.jedit.gui.DockableWindowManagerImpl	org.gjt.sp.jedit.gui.DockableWindowManager$DockingLayout	
+BUILDER_PATTERN	org.gjt.sp.jedit.search.SearchMatcher	org.gjt.sp.jedit.search.PatternSearchMatcher	org.gjt.sp.jedit.search.SearchMatcher$Match	
